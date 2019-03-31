@@ -1,15 +1,18 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var port = process.env.PORT || 3000;
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3000;
+const chat = require('./chat.js')
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.send('Welcome Abroad')
 });
+app.get('/:fid/:tid', chat.newChat)
 
 io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+  socket.on('chatId', function(msg,fid,tid){
+    io.emit(`chatId_${fid}${tid}`, msg);
+    io.emit(`chatId_${tid}${fid}`, msg);
   });
 });
 
